@@ -1,0 +1,36 @@
+# CLion IDE project files
+.idea/
+*.iml
+*.iws
+
+# IDE-specific files
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
+
+# CMake build folders
+cmake-build-*/
+build/
+
+# Compiled object files
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.out
+*.a
+*.lib
+
+# Backup files
+*~
+*.swp
+*.swo
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
