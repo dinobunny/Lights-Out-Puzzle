@@ -44,7 +44,7 @@ make
 ### Натискаємо Clone Repository 
 ![image](https://github.com/user-attachments/assets/e7071670-303f-4f30-aeab-a5584f886f58)
 
-### Переходимо на сторінку ГітХаба шукаємо URL а це саме -> https://github.com/dinobunny/Lights-Out-Puzzle.git
+### URL -> https://github.com/dinobunny/Lights-Out-Puzzle.git
 ### Directory це наше сховище данної копії
 ---
 ### Таке повинно бути і після цього натискаємо  Clone
@@ -65,7 +65,7 @@ make
 ### Aplay -> Ok 
 ![image](https://github.com/user-attachments/assets/d00e8bf2-bf42-408b-97c6-76c089a022b6)
 ---
-###тепер можна ранити 
+Тепер можна RUN  
 ---
 ### 🧪 Приклад використання:
 
