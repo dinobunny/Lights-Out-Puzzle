@@ -45,7 +45,7 @@ make
 ![image](https://github.com/user-attachments/assets/e7071670-303f-4f30-aeab-a5584f886f58)
 
 ### URL -> https://github.com/dinobunny/Lights-Out-Puzzle.git
-### Directory це наше сховище данної копії
+### Directory це ми обираємо сховище для данної копії
 ---
 ### Таке повинно бути і після цього натискаємо  Clone
 ![image](https://github.com/user-attachments/assets/a76ce317-2c2e-4af0-bdcb-393611eb9c64)
