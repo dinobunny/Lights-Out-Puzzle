@@ -40,12 +40,16 @@ make
 
 ###  Якщо у вас Clion 
 ![image](https://github.com/user-attachments/assets/4f05a3c9-9dea-400e-bee1-6126eef27008)
-```натискаємо Clone Repository 
+---
+### Натискаємо Clone Repository 
 ![image](https://github.com/user-attachments/assets/e7071670-303f-4f30-aeab-a5584f886f58)
+---
 ```переходимо на сторінку ГітХаба шукаємо URL а це саме -> https://github.com/dinobunny/Lights-Out-Puzzle.git
-```Directory це наше сховище данної копії 
+```Directory це наше сховище данної копії
+---
+### Таке повинно бути і після цього натискаємо  Clone
 ![image](https://github.com/user-attachments/assets/a76ce317-2c2e-4af0-bdcb-393611eb9c64)
-```таке повинно бути і після цього натискаємо  Clone
+---
 ![image](https://github.com/user-attachments/assets/c445bf94-c04b-47cf-9458-a6b2af48252e)
 ```Йде загрузка і після чого натискаємо Trust Project
 ![image](https://github.com/user-attachments/assets/f7d893c2-ec30-4ce0-ab94-402f8940548e)
