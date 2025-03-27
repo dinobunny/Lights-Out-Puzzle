@@ -111,11 +111,37 @@ bool openBox(uint32_t y, uint32_t x)
 {
     SecureBox box(y, x);
 
-    // PLEASE, PROVIDE YOUR SOLUTION HERE
-    // ...
+    // Total number of cells in the grid
+    uint32_t totalCells = y * x;
 
-    return box.isLocked();
+    // Try all possible combinations of toggles (2^(y*x))
+    for (uint64_t mask = 0; mask < (1ULL << totalCells); ++mask)
+    {
+        // Create a copy of the box for simulation
+        SecureBox attempt = box;
+
+        // For each bit in the mask, decide whether to toggle that cell
+        for (uint32_t i = 0; i < totalCells; ++i)
+        {
+            if ((mask >> i) & 1)
+            {
+                uint32_t row = i / x;
+                uint32_t col = i % x;
+
+                // Toggle the cell at (row, col)
+                attempt.toggle(row, col);
+            }
+        }
+
+        // If box is fully unlocked (all false), return success
+        if (!attempt.isLocked())
+            return false;
+    }
+
+    // If no combination worked, return failure
+    return true;
 }
+
 
 
 int main(int argc, char* argv[])
