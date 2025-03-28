@@ -1,98 +1,93 @@
 ## 📦 Lights-Out-Puzzle Solver
 
-Розв'язок задачі "SecureBox" — відкриття замкненого контейнера (2D boolean grid) лише за допомогою публічного API: `toggle`, `isLocked`, `getState`.
+Solution "SecureBox" - opening a closed container (2D Boolean Grid) only with the help of a public API: `toggle`,` ISLOCKED ', `Getstate'.
 
 ---
 
-### 🔧 Вимоги для підключення даної програми
+### 🔧 Requirements to connect this program
 
-- C++17 або вище
+- C++17 
 - CMake ≥ (VERSION 3.30)
 - Git
-- G++ або Clang (на Linux/macOS)
-- MinGW або MSVC (на Windows)
-- (Опціонально) CLion / VSCode / інший редактор
+- G++ or Clang (на Linux/macOS)
+- MinGW or MSVC (на Windows)
+- (Optional) CLion / VSCode / Another editor
 
 ---
 
-### Логіка моєї програми 
+### The logic of my program
 ---
-СПОЧАТКУ -> створюється коробка з розмірами y × x, наприклад 3×3 = 9 клітинок.
+First -> creates a box with dimensions Y × x, for example, 3 × 3 = 9 cells.
 ---
-ПОТІМ -> рахується скільки всього клітинок (наприклад, 9).
+Then -> count how many cells (for example, 9). 
+--- 
+Next-> Select all possible combinations of clicks on these cells (2^9 = 512 options). 
 ---
-ДАЛІ -> перебираємо всі можливі комбінації натискань на ці клітинки (2^9 = 512 варіантів).
+at every step-> a copy of the box is created to work with it without touching the original. 
 ---
-НА КОЖНОМУ КРОЦІ -> створюється копія коробки, щоб працювати з нею, не чіпаючи оригінал.
+Check-> What cells should be pressed according to the current combination (mask). 
 ---
-ПЕРЕВІРЯЄМО -> які клітинки треба натиснути згідно з поточною комбінацією (маскою).
+If in the mask 1-> click on the appropriate cell (switch it and the entire row and column). 
 ---
-ЯКЩО В МАСКІ 1 -> натискаємо на відповідну клітинку (перемикаємо її та весь рядок і стовпець).
+After all the clicks-> check whether the box has become fully unlocked (all False cells). 
 ---
-ПІСЛЯ ВСІХ НАТИСКАНЬ -> перевіряємо, чи коробка стала повністю розблокована (всі клітинки false).
+If yes-> return False-that is, the box opened. 
 ---
-ЯКЩО ТАК -> повертаємо false — тобто коробка відкрилася.
----
-ЯКЩО ЖОДНА КОМБІНАЦІЯ НЕ СПРАЦЮВАЛА -> повертаємо true — коробку не вдалося відкрити.
+If no combination worked-> return True-the box failed to open. 
 ---
 
-### 📥 Як встановити і запустити (Linux/macOS):
+
+### 📥 How to set and run (Linux/macOS):
 
 ```bash
-# 1. Клонуємо репозиторій
+# 1. Clone repository
 git clone https://github.com/your-username/Lights-Out-Puzzle.git
 cd Lights-Out-Puzzle
 
-# 2. Створюємо директорію для збірки
+# 2. We create a directory for assembly
 mkdir build
 cd build
 
-# 3. Генеруємо Make-файли
+# 3. We generate make files
 cmake ..
 
-# 4. Компілюємо
+# 4. Compile
 make
 
-# 5. Запускаємо (наприклад, 5x5 коробка) параметри обов'язково бо так не буде працювати 
+# 5. Run (eg 5x5 box) Options are sure to be so not work
 ./Lights_Out_Puzzle 5 5 
 ```
 
 ---
 
-###  Якщо у вас Clion 
+###  If you have Clion 
 ![image](https://github.com/user-attachments/assets/4f05a3c9-9dea-400e-bee1-6126eef27008)
 ---
-### Натискаємо Clone Repository 
+### Press Clone Repository 
 ![image](https://github.com/user-attachments/assets/e7071670-303f-4f30-aeab-a5584f886f58)
 
 ### URL -> https://github.com/dinobunny/Lights-Out-Puzzle.git
-### Directory це ми обираємо сховище для данної копії
 ---
-### Таке повинно бути і після цього натискаємо  Clone
+### This should be and then press -> Clone
 ![image](https://github.com/user-attachments/assets/a76ce317-2c2e-4af0-bdcb-393611eb9c64)
 ---
-### Йде загрузка і після чого натискаємо Trust Project
+### Goes tight and then press Trust Project
 ![image](https://github.com/user-attachments/assets/c445bf94-c04b-47cf-9458-a6b2af48252e)
 ---
-### Вилазить настройка проекта, клацаємо ОК 
+### Get out of the project setting up, click OK
 ![image](https://github.com/user-attachments/assets/f7d893c2-ec30-4ce0-ab94-402f8940548e)
 ---
-### Бачимо цей єкран 
+### We see this Ecran
 ![image](https://github.com/user-attachments/assets/712a7558-1669-4378-a41a-c20df4188936)
 ---
-### натискаємо на 3 крапочки -> Edit -> (Знаходимо та вписуємо) Program arguments: 5 5
+### Click on 3 dots -> Edit -> (we find and fit) Program Arguments: 5 5
 ![image](https://github.com/user-attachments/assets/16bb03aa-4724-4ac0-ad26-d8ce45c1250c)
 ---
 ### Aplay -> Ok 
 ![image](https://github.com/user-attachments/assets/d00e8bf2-bf42-408b-97c6-76c089a022b6)
 ---
-Тепер можна RUN  
+RUN  
 ---
-### 🧪 Приклад використання:
-
-```bash
-./Lights_Out_Puzzle 4 4
-```
 
 📤 Вивід:
 ```
@@ -103,6 +98,6 @@ BOX: OPENED!
 BOX: LOCKED!
 ```
 ---
-### 🤝 Автора:
+### 🤝 Author:
 > Євген Рафальський — ентузіаст, який не боїться XOR-ів, рекурсій і стекових оверфлоу 😄 (😄😄😄😄😄не дуже впевнено😄😄😄😄😄😄)
 ---
