@@ -13,12 +13,16 @@ TEST(OpenBoxTest, Basic3x3) {
     testBox(3, 3);
 }
 
-TEST(OpenBoxTest, Medium5x5) {
-    testBox(5, 5);
+TEST(OpenBoxTest, Medium50x50) {
+    testBox(50, 50);
 }
 
 TEST(OpenBoxTest, Large10x10) {
     testBox(10, 10);
+}
+
+TEST(OpenBoxTest, Large20x20) {
+    testBox(20, 20);
 }
 
 TEST(OpenBoxTest, TooSmall) {
