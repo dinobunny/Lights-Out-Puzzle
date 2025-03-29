@@ -7,7 +7,7 @@ Solution "SecureBox" - opening a closed container (2D Boolean Grid) only with th
 ### 🔧 Requirements to connect this program
 
 - C++17 
-- CMake ≥ (VERSION 3.30)
+- CMake ≥ (VERSION 3.14)
 - Git
 - G++ or Clang (на Linux/macOS)
 - MinGW or MSVC (на Windows)
