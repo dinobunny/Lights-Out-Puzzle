@@ -160,6 +160,8 @@ bool gauss_mod2(std::vector<std::vector<int> > &A, std::vector<int> &b, std::vec
 //================================================================================
 bool openBox(uint32_t y, uint32_t x) {
 
+    if (y < 3 || x < 3) return true;
+
     SecureBox box(y, x);
 
     // Get current box state
