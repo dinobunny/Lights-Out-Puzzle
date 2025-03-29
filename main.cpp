@@ -107,45 +107,101 @@ private:
 //              all values in the box 'false'. The function should return false if
 //              the box is successfully unlocked, or true if any cell remains locked.
 //================================================================================
-bool openBox(uint32_t y, uint32_t x)
-{
-    SecureBox box(y, x);
-
-    // Total number of cells in the grid
-    uint32_t totalCells = y * x;
-
-    // Try all possible combinations of toggles (2^(y*x))
-    for (uint64_t mask = 0; mask < (1ULL << totalCells); ++mask)
-    {
-        // Create a copy of the box for simulation
-        SecureBox attempt = box;
-
-        // For each bit in the mask, decide whether to toggle that cell
-        for (uint32_t i = 0; i < totalCells; ++i)
-        {
-            if ((mask >> i) & 1)
-            {
-                uint32_t row = i / x;
-                uint32_t col = i % x;
-
-                // Toggle the cell at (row, col)
-                attempt.toggle(row, col);
-            }
-        }
-
-        // If box is fully unlocked (all false), return success
-        if (!attempt.isLocked())
-            return false;
+// extern bool openBox(uint32_t y, uint32_t x)
+// {
+//     // Якщо розмір поля менший за 3x3, виводимо повідомлення і повертаємо true (тобто коробка залишається заблокованою),
+//     // оскільки за умовою для менших полів рішення неможливе або не має сенсу.
+//     if (y < 3 || x < 3) {
+//         std::cerr << "Minimum grid size is 3x3. Try again.\n";
+//         return true;
+//     }//+
+//
+//     SecureBox box(y, x);
+//     auto state = box.getState();
+//     for (auto& row : state) {
+//         for (bool b : row)
+//             std::cout << b << " ";
+//         std::cout << "\n";
+//     }
+//     std::cout << "------\n";
+//
+//     // Якщо коробка вже відкрита (тобто isLocked() повертає false), то повертаємо false – нічого робити не треба.
+//     if (!box.isLocked())
+//         return false;//+
+//
+//     // We'll keep track of the toggles needed
+//     std::vector<std::vector<bool>> toggleMap(y, std::vector<bool>(x, false));
+//
+//     // Step 1: Compute where toggles are needed
+//     for (uint32_t i = 0; i < y; ++i) {
+//         for (uint32_t j = 0; j < x; ++j) {
+//             // Update current state with previous toggles effect
+//             bool current = state[i][j];
+//             for (uint32_t k = 0; k < i; ++k)
+//                 if (toggleMap[k][j]) current = !current;
+//             for (uint32_t k = 0; k < j; ++k)
+//                 if (toggleMap[i][k]) current = !current;
+//             if (toggleMap[i][j]) current = !current;
+//
+//             // If it's locked, we toggle here
+//             if (current) toggleMap[i][j] = true;
+//         }
+//     }
+//
+//     // Step 2: Apply the toggles
+//     for (uint32_t i = 0; i < y; ++i)
+//         for (uint32_t j = 0; j < x; ++j)
+//             if (toggleMap[i][j]) box.toggle(i, j);
+//
+//     // Return final status
+//     return box.isLocked();
+// }
+extern bool openBox(uint32_t y, uint32_t x) {
+    if (y < 3 || x < 3) {
+        std::cerr << "Minimum grid size is 3x3. Try again.\n";
+        return true;
     }
 
-    // If no combination worked, return failure
-    return true;
+    SecureBox box(y, x);
+    auto state = box.getState();
+    for (auto& row : state) {
+        for (bool b : row)
+            std::cout << b << " ";
+        std::cout << "\n";
+    }
+    std::cout << "------\n";
+
+    std::vector<std::vector<bool>> toggled(y, std::vector<bool>(x, false));
+
+    for (uint32_t i = 0; i < y; ++i) {
+        for (uint32_t j = 0; j < x; ++j) {
+            bool current = state[i][j];
+
+            // Застосовуємо всі попередні toggle-ефекти по колонках
+            for (uint32_t row = 0; row < i; ++row)
+                if (toggled[row][j]) current = !current;
+
+            // і по рядках
+            for (uint32_t col = 0; col < j; ++col)
+                if (toggled[i][col]) current = !current;
+
+            if (current)
+                toggled[i][j] = true;
+        }
+    }
+
+    // Застосовуємо toggle-операції
+    for (uint32_t i = 0; i < y; ++i)
+        for (uint32_t j = 0; j < x; ++j)
+            if (toggled[i][j])
+                box.toggle(i, j);
+
+    return box.isLocked();
 }
 
 
-
-int main(int argc, char* argv[])
-{
+#ifndef UNIT_TESTING
+int main(int argc, char* argv[]) {
     uint32_t y = std::atol(argv[1]);
     uint32_t x = std::atol(argv[2]);
     bool state = openBox(y, x);
@@ -157,4 +213,5 @@ int main(int argc, char* argv[])
 
     return state;
 }
+#endif
 
