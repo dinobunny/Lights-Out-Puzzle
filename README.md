@@ -1,66 +1,62 @@
-## 📦 Lights-Out-Puzzle Solver
 
-Solution "SecureBox" - opening a closed container (2D Boolean Grid) only with the help of a public API: `toggle`,` ISLOCKED ', `Getstate'.
+# 🔦 Lights-Out-Puzzle
 
----
-
-### 🔧 Requirements to connect this program
-
-- C++17 
-- CMake ≥ (VERSION 3.14)
-- Git
-- G++ or Clang (на Linux/macOS)
-- MinGW or MSVC (на Windows)
-- (Optional) CLion / VSCode / Another editor
+An implementation of the classic "Lights Out" puzzle using C++ and Gaussian elimination in GF(2).
 
 ---
 
+## 🧩 About
 
-### 🔐 Мета:
-Відкрити коробку, яка виглядає як **таблиця з клітинок**.  
-Кожна клітинка може бути:
-- `true` — **заблокована**
-- `false` — **відкрита**
----
-https://www.youtube.com/watch?v=1izbpSk3ays 
-пояснює як грати 
----
+You are given a locked grid (SecureBox) with lights (on/off).  
+The goal is to find the sequence of button presses that will turn off all the lights.
 
-## 🧩 Правила гри:
-Коли ви натискаєте (toggle) на клітинку:
-- Змінюється **сама клітинка**
-- Змінюється **весь ряд** цієї клітинки
-- Змінюється **вся колонка** цієї клітинки
----
-https://www.logicgamesonline.com/lightsout/
-Можна погратись 
----
-
-## 🔧 Що робить `openBox(y, x)`:
-1. Зчитує поточний стан коробки (де які клітинки заблоковані)
-2. Будує **велику формулу**, яка описує:
-   > "Які клітинки потрібно натиснути, щоб усе стало false"
-3. Передає цю формулу у функцію `gauss_mod2`
-4. Отримує відповідь: які клітинки треба натиснути
-5. Тисне ці клітинки
-6. Перевіряє: якщо всі `false` — ✅ коробку відкрито
+Each button toggles:
+- Its entire **row**
+- Its entire **column**  
+*(excluding the center cell, which gets toggled 3 times → stays the same)*
 
 ---
 
-## 🔬 Що робить `gauss_mod2(...)`:
-Це математична формула, яка працює в **бінарній системі** (`0` і `1`).
+## 🧠 How It Works
 
-- Вона бере формулу з `openBox`
-- І рахує, які клітинки треба натиснути
-- Все працює на базі **методу Гауса**, але з операцією XOR замість звичайного ділення
+The puzzle is modeled as a linear system of equations:
 
-> Тобто, вона як **розумний калькулятор**, який підбирає комбінацію кліків, щоб усе розблокувалось
+```
+A * x = b   (mod 2)
+```
 
-//Література де брати цю всю інфу: 
+- `A` — matrix of influences (which button affects which light)
+- `b` — current state of the grid (1 = on, 0 = off)
+- `x` — solution vector: which buttons to press
+
+The system is solved using **Gaussian elimination in GF(2)**.
+
 ---
-https://cp-algorithms.com/linear_algebra/linear-system-gauss.html
-це єдина годна ссилка усе друге сміття 
+
+## 🗂 File Structure
+
+```
+Lights-Out-Puzzle/
+├── main.cpp              # Entry point
+├── OpenBox.h / .cpp      # Matrix solver and system builder
+├── SecureBox.h           # Logic of the toggle box
+├── openbox_test.cpp      # Unit tests using GoogleTest
+├── CMakeLists.txt        # CMake project file
+└── README.md             # Project description
+```
+
 ---
+You will see the initial state and a list of button presses to solve the puzzle.
+
+---
+
+## ✅ Features
+
+- Clean matrix-based logic
+- Fast and reliable solver
+- Modular codebase (divided by logic and UI)
+- Fully covered with unit tests
+- Solves any N x N size grid
 
 
 ## 🧪 Що вже зроблено:
