@@ -40,12 +40,20 @@ if(BUILD_TESTING)
     target_compile_definitions(test_runner PRIVATE UNIT_TESTING)
 
     # Лінкуємо з GoogleTest
+    # Test executable (separate from main)
+    add_executable(test_runner openbox_test.cpp main.cpp)
+
+    # Define UNIT_TESTING macro so main.cpp can disable its own main()
+    target_compile_definitions(test_runner PRIVATE UNIT_TESTING)
+
+    # Link GTest
     target_link_libraries(test_runner
             GTest::gtest
             GTest::gtest_main
     )
 
     # Автоматичне відкриття тестів
+
     include(GoogleTest)
     gtest_discover_tests(test_runner)
 endif()
