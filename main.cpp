@@ -23,21 +23,24 @@ Evaluation Criteria:
     - Algorithmic insight and clarity
 */
 
-class SecureBox {
+class SecureBox
+{
 private:
-    std::vector<std::vector<bool> > box;
+    std::vector<std::vector<bool>> box;
 
 public:
+
     //================================================================================
     // Constructor: SecureBox
     // Description: Initializes the secure box with a given size and
     //              shuffles its state using a pseudo-random number generator
     //              seeded with current time.
     //================================================================================
-    SecureBox(uint32_t y, uint32_t x): ySize(y), xSize(x) {
+    SecureBox(uint32_t y, uint32_t x): ySize(y), xSize(x)
+    {
         rng.seed(time(0));
         box.resize(y);
-        for (auto &it: box)
+        for (auto& it : box)
             it.resize(x);
         shuffle();
     }
@@ -47,7 +50,8 @@ public:
     // Description: Toggles the state at position (x, y) and also all cells in the
     //              same row above and the same column to the left of it.
     //================================================================================
-    void toggle(uint32_t y, uint32_t x) {
+    void toggle(uint32_t y, uint32_t x)
+    {
         box[y][x] = !box[y][x];
         for (uint32_t i = 0; i < xSize; i++)
             box[y][i] = !box[y][i];
@@ -60,7 +64,8 @@ public:
     // Description: Returns true if any cell
     //              in the box is true (locked); false otherwise.
     //================================================================================
-    bool isLocked() {
+    bool isLocked()
+    {
         for (uint32_t x = 0; x < xSize; x++)
             for (uint32_t y = 0; y < ySize; y++)
                 if (box[y][x])
@@ -73,7 +78,8 @@ public:
     // Method: getState
     // Description: Returns a copy of the current state of the box.
     //================================================================================
-    std::vector<std::vector<bool> > getState() {
+    std::vector<std::vector<bool>> getState()
+    {
         return box;
     }
 
@@ -86,169 +92,213 @@ private:
     // Description: Randomly toggles cells in the box to
     // create an initial locked state.
     //================================================================================
-    void shuffle() {
+    void shuffle()
+    {
         for (uint32_t t = rng() % 1000; t > 0; t--)
             toggle(rng() % ySize, rng() % xSize);
     }
 };
 
-//================================================================================
-// Function: gauss_mod2
-// Description: Solves a system of linear equations over GF(2) (mod 2)
-//              using Gaussian elimination. Operates on binary (0/1)
-//              coefficient matrices and right-hand side vectors, relying
-//              solely on XOR operations. Used to determine the toggle positions
-//              needed to reach the unlocked (all false) state in SecureBox.
-//================================================================================
 
-bool gauss_mod2(std::vector<std::vector<int> > &A, std::vector<int> &b, std::vector<int> &x) {
-    const int n = A.size(); // Number of equations
-    const int m = A[0].size();  // Number of variables
-    x.assign(m, 0);  // Initialize solution vector with zeroes
+//================================================================================
+// Function: solveWithGauss
+// Description: Решает систему линейных уравнений по модулю 2
+//              методом Гаусса. Используется для вычисления, какие
+//              кнопки нужно нажать для открытия коробки.
+//================================================================================
+bool solveWithGauss(
+    std::vector<std::vector<int>>& matrix,
+    std::vector<int>& targetState,
+    std::vector<int>& solution
+) {
+    const size_t numRows = matrix.size();// кількість Рядків
+    const size_t numCols = matrix[0].size();// кількістт колонок
+    solution.assign(numCols, 0);//створюю пусту колонку куди буде записуватись кнопка
 
-    // Step 1: Forward elimination (bring A to row echelon form)
-    for (int col = 0, row = 0; col < m && row < n; ++col) {
-        // Find a pivot row with a 1 in the current column and swap to current row
-        for (int i = row; i < n; ++i) {
-            if (A[i][col]) {
-                std::swap(A[i], A[row]);
-                std::swap(b[i], b[row]);
+    size_t rank = 0;
+
+    for (size_t col = 0; col < numCols && rank < numRows; ++col) {
+        size_t pivotRow = rank;
+        while (pivotRow < numRows && matrix[pivotRow][col] == 0)
+            ++pivotRow;
+        if (pivotRow == numRows)
+            continue;
+
+        std::swap(matrix[pivotRow], matrix[rank]);
+        std::swap(targetState[pivotRow], targetState[rank]);
+
+        for (size_t row = 0; row < numRows; ++row) {
+            if (row != rank && matrix[row][col] == 1) {
+                for (size_t j = col; j < numCols; ++j)
+                    matrix[row][j] ^= matrix[rank][j];
+                targetState[row] ^= targetState[rank];
+            }
+        }
+        ++rank;
+    }
+
+    for (size_t i = rank; i < numRows; ++i) {
+        bool isZeroRow = true;
+        for (int val : matrix[i]) {
+            if (val != 0) {
+                isZeroRow = false;
                 break;
             }
         }
-
-        // If there's no pivot in this column, skip it
-        if (!A[row][col]) continue;
-
-        // Eliminate the current column from all other rows using XOR
-        for (int i = 0; i < n; ++i) {
-            if (i != row && A[i][col]) {
-                for (int j = col; j < m; ++j)
-                    A[i][j] ^= A[row][j];  // Subtract rows (mod 2)
-                b[i] ^= b[row];        // Adjust the right-hand side
-            }
-        }
-        ++row; // Move to the next row
+        if (isZeroRow && targetState[i] == 1)
+            return false;
     }
 
-    // Step 2: Back-substitution to reconstruct solution vector
-    for (int i = 0; i < n; ++i) {
-        int pivot = -1;
-        // Find pivot position in current row
-        for (int j = 0; j < m; ++j) {
-            if (A[i][j]) {
-                pivot = j;
+    for (size_t i = rank; i-- > 0;) {
+        int pivotCol = -1;
+        for (size_t j = 0; j < numCols; ++j) {
+            if (matrix[i][j] == 1) {
+                pivotCol = static_cast<int>(j);
                 break;
             }
         }
-        // Assign the corresponding value from b to the solution
-        if (pivot != -1)
-            x[pivot] = b[i];
+        if (pivotCol == -1) continue;
+
+        int xorSum = targetState[i];
+        for (size_t j = pivotCol + 1; j < numCols; ++j)
+            if (matrix[i][j] == 1)
+                xorSum ^= solution[j];
+        solution[pivotCol] = xorSum;
     }
 
-    // Note: We assume the system is always consistent (no 0 = 1 rows)
     return true;
 }
 
 //================================================================================
-// Function: openBox
-// Description: Your task is to implement this function to unlock the SecureBox.
-//              Use only the public methods of SecureBox (toggle, getState, isLocked).
-//              You must determine the correct sequence of toggle operations to make
-//              all values in the box 'false'. The function should return false if
-//              the box is successfully unlocked, or true if any cell remains locked.
+// Function: createEquationSystem
+// Description: Строит матрицу влияния всех кнопок и вектор
+//              текущего состояния ячеек (включено/выключено).
 //================================================================================
-bool openBox(uint32_t y, uint32_t x) {
+void createEquationSystem(
+    const std::vector<std::vector<bool>>& boxState,
+    std::vector<std::vector<int>>& influenceMatrix,
+    std::vector<int>& initialStateVector
+) {
+    uint32_t rows = boxState.size();
+    uint32_t cols = boxState[0].size();
+    uint32_t totalCells = rows * cols;
 
-    if (y < 3 || x < 3) return true;
+    influenceMatrix.assign(totalCells, std::vector<int>(totalCells, 0));
+    initialStateVector.assign(totalCells, 0);
 
-    SecureBox box(y, x);
+    for (uint32_t row = 0; row < rows; ++row) {
+        for (uint32_t col = 0; col < cols; ++col) {
+            int toggleIndex = row * cols + col;
 
-    // Get current box state
-    auto state = box.getState();
+            for (uint32_t k = 0; k < cols; ++k)
+                influenceMatrix[row * cols + k][toggleIndex] ^= 1;
 
-    // Print initial state for debug
-    // for (auto &row: state) {
-    //     for (bool b: row)
-    //         std::cout << b << " ";
-    //     std::cout << "\n";
-    // }
-    // std::cout << "------\n";
+            for (uint32_t k = 0; k < rows; ++k)
+                influenceMatrix[k * cols + col][toggleIndex] ^= 1;
 
-    int total = y * x;
-    auto A = std::vector(total, std::vector<int>(total, 0));
-    std::vector<int> b(total);
-
-    // Step 1: Build matrix A — each column represents a toggle at (i, j)
-    //         Each toggle affects its row, column, and itself
-    for (uint32_t i = 0; i < y; ++i) {
-        for (uint32_t j = 0; j < x; ++j) {
-            const int idx = i * x + j;
-
-            // Toggle affects entire row i
-            for (uint32_t k = 0; k < x; ++k)
-                A[i * x + k][idx] = 1;
-
-            // Toggle affects entire column j
-            for (uint32_t k = 0; k < y; ++k)
-                A[k * x + j][idx] = 1;
-
-            // Redundant, but explicitly mark (i, j)
-            A[idx][idx] = 1;
+            influenceMatrix[toggleIndex][toggleIndex] ^= 1;
         }
     }
 
-    // Step 2: Build vector b — flatten initial state into 1D vector
-    for (uint32_t i = 0; i < y; ++i)
-        for (uint32_t j = 0; j < x; ++j)
-            b[i * x + j] = state[i][j] ? 1 : 0;
-
-    // Step 3: Solve Ax = b over GF(2) to get toggle decisions
-    std::vector<int> xvec;
-    gauss_mod2(A, b, xvec);
-
-    // Step 4: Apply the solution — toggle where xvec[i] == 1
-    for (uint32_t i = 0; i < y; ++i)
-        for (uint32_t j = 0; j < x; ++j)
-            if (xvec[i * x + j])
-                box.toggle(i, j);
-
-    // Return whether the box is still locked
-    return box.isLocked();
+    for (uint32_t row = 0; row < rows; ++row)
+        for (uint32_t col = 0; col < cols; ++col)
+            initialStateVector[row * cols + col] = boxState[row][col] ? 1 : 0;
 }
 
 
-#ifndef UNIT_TESTING
-int main(int argc, char* argv[]) {
+//================================================================================
+// Function: openBox
+// Description: Основная функция, открывающая коробку. Строит уравнение,
+//              решает его, применяет найденные нажатия и возвращает,
+//              осталась ли коробка заблокированной.
+//================================================================================
+bool openBox(uint32_t rows, uint32_t cols) {
+    SecureBox box(rows, cols);
+    int step = 1;
 
+    std::vector<std::pair<int, int>> keySequence; // зберігаємо правильну послідовність
+
+    while (box.isLocked()) {
+        auto state = box.getState();
+
+        std::vector<std::vector<int>> A;
+        std::vector<int> b;
+        createEquationSystem(state, A, b);
+
+        std::vector<int> solution;
+        if (!solveWithGauss(A, b, solution)) {
+            std::cout << "[!] Рішення неможливе на цьому кроці." << std::endl;
+            return true;
+        }
+
+        bool moved = false;
+
+        for (uint32_t i = 0; i < solution.size(); ++i) {
+            if (solution[i]) {
+                uint32_t row = i / cols;
+                uint32_t col = i % cols;
+
+                box.toggle(row, col);
+
+                keySequence.emplace_back(row, col);
+                step++;
+                moved = true;
+                break;
+            }
+        }
+
+        if (!moved) {
+            std::cout << "[!] Жодної кнопки не натиснуто — помилка." << std::endl;
+            break;
+        }
+    }
+
+    if (!box.isLocked()) {
+        std::cout << "\n The key to opening(a sequence of pressing):" << std::endl;
+        for (auto& [row, col] : keySequence) {
+            std::cout << "toggle(" << row << ", " << col << ")" << std::endl;
+        }
+        return false;
+
+    } else {
+        return true;
+    }
+}
+
+
+
+
+int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cerr << "Usage:" << argv[0] << " <rows> <columns>\n";
+        std::cerr << "Usage: " << argv[0] << " <rows> <cols>\n";
         return 1;
     }
-    
-    long ly = std::atol(argv[1]);
-    long lx = std::atol(argv[2]);
-    
-    if (ly <= 0 || lx <= 0) {
+
+    long inputRows = std::atol(argv[1]);
+    long inputCols = std::atol(argv[2]);
+
+    if (inputRows <= 0 || inputCols <= 0) {
         std::cerr << "Error: rows and columns must be positive integers." << std::endl;
         return 1;
     }
-    if (ly < 3 || lx < 3) {
+    if (inputRows < 3 || inputCols < 3) {
         std::cerr << "Error: minimal size is 3x3." << std::endl;
         return 1;
     }
-    
-    auto y = static_cast<uint32_t>(ly);
-    auto x = static_cast<uint32_t>(lx);
+    if (inputRows > 100 || inputCols > 100) {
+        std::cerr << "Error: max size is 100x100." << std::endl;
+        return 1;
+    }
 
-    bool state = openBox(y, x);
+    auto rows = static_cast<uint32_t>(inputRows);
+    auto cols = static_cast<uint32_t>(inputCols);
 
+    bool locked = openBox(rows, cols);
 
-    if (state)
+    if (locked)
         std::cout << "BOX: LOCKED!" << std::endl;
     else
         std::cout << "BOX: OPENED!" << std::endl;
 
-    return state;
+    return locked;
 }
-#endif
