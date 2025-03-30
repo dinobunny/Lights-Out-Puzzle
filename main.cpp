@@ -19,11 +19,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    auto rows = static_cast<uint32_t>(inputRows);
-    auto cols = static_cast<uint32_t>(inputCols);
-
     // Запускаємо алгоритм
-    bool locked = openBox(rows, cols);
+    bool locked = openBox(static_cast<uint32_t>(inputRows), static_cast<uint32_t>(inputCols));
 
     std::cout << "\nBOX: " << (locked ? "LOCKED!" : "OPENED!") << std::endl;
     return locked; // 0 = success, 1 = still locked

@@ -6,9 +6,9 @@
 
 //================================================================================
 // Function: solveWithGauss
-// Description: Решает систему линейных уравнений по модулю 2
-//              методом Гаусса. Используется для вычисления, какие
-//              кнопки нужно нажать для открытия коробки.
+// Description: solves the system of linear equations according to module 2
+//              Gaussian method. It is used to calculate which
+//              buttons you need to press to open the box.
 //================================================================================
 bool solveWithGauss(
     std::vector<std::vector<int>>& matrix, // матриця впливу (A) — NxN
@@ -22,9 +22,9 @@ bool solveWithGauss(
 //              текущего состояния ячеек (включено/выключено).
 //================================================================================
 void createEquationSystem(
-    const std::vector<std::vector<bool>>& boxState,
-    std::vector<std::vector<int>>& influenceMatrix,
-    std::vector<int>& initialStateVector
+    const std::vector<std::vector<bool>>& boxState,// 2D-матриця — поточний стан поля (true = світиться)
+    std::vector<std::vector<int>>& influenceMatrix,// Вихід: матриця впливу A (NxN) — яка кнопка на яку клітинку діє
+    std::vector<int>& initialStateVector           // Вихід: вектор b — стан лампочок у плоскому вигляді
 );
 //================================================================================
 // Function: openBox

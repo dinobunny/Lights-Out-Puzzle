@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 # ================================================================================
 # BUILD OPTIONS
 # ================================================================================
-option(BUILD_TESTING "Build tests" ON)
+option(BUILD_TESTING "Build tests" OFF)
 
 # ================================================================================
 # Main executable
 # ================================================================================
-add_executable(Lights_Out_Puzzle main.cpp)
+add_executable(Lights_Out_Puzzle main.cpp OpenBox.cpp)
 
 # ================================================================================
 # Unit testing setup (optional)
@@ -36,16 +36,13 @@ if(BUILD_TESTING)
     )
 
 
-    # Флаг, щоб main.cpp не заважав
     target_compile_definitions(test_runner PRIVATE UNIT_TESTING)
 
-    # Лінкуємо з GoogleTest
     target_link_libraries(test_runner
             GTest::gtest
             GTest::gtest_main
     )
 
-    # Автоматичне відкриття тестів
     include(GoogleTest)
     gtest_discover_tests(test_runner)
 endif()

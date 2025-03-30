@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <cstdint>
 #include "OpenBox.h"
-
 extern bool openBox(uint32_t y, uint32_t x);
 
 void testBox(uint32_t y, uint32_t x) {
@@ -72,9 +71,12 @@ TEST(EquationSystemTest, MatrixConstruction3x3) {
 
 TEST(GaussTest, NoSolutionSystem) {
     std::vector<std::vector<int>> A = {
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+        {0, 0, 1},
         {0, 0, 0},
-        {0, 0, 0},
-        {0, 0, 0}
+        {1, 1, 0}
     };
     std::vector<int> b = {0, 1, 0};
 
@@ -84,3 +86,46 @@ TEST(GaussTest, NoSolutionSystem) {
     EXPECT_FALSE(success); // 0=1 — неможливо
 }
 
+
+
+// Припустимо, що solveWithGauss має такий інтерфейс:
+TEST(GaussSolverTest, ConsistentSystemShouldPass)
+{
+    // Матриця має розв'язок
+    std::vector<std::vector<int>> matrix = {
+        {1, 0, 1},
+        {0, 1, 1},
+        {1, 1, 0}
+    };
+
+    std::vector<int> targetState = {
+        1,
+        0,
+        1
+    };
+
+    std::vector<int> solution;
+
+    EXPECT_TRUE(solveWithGauss(matrix, targetState, solution));
+}
+
+// Тестуємо: Несумісна система — має повернути false
+TEST(GaussSolverTest, InconsistentSystemShouldFail)
+{
+    // Матриця має 1 нульовий рядок
+    std::vector<std::vector<int>> matrix = {
+        {1, 0, 1},
+        {0, 1, 1},
+        {0, 0, 0} // ← нульовий рядок
+    };
+
+    std::vector<int> targetState = {
+        1,
+        0,
+        1  // ← суперечить нульовому рядку → 0 = 1
+    };
+
+    std::vector<int> solution;
+
+    EXPECT_FALSE(solveWithGauss(matrix, targetState, solution));
+}
