@@ -27,18 +27,25 @@ if(BUILD_TESTING)
     )
     FetchContent_MakeAvailable(googletest)
 
-    # Test executable (separate from main)
-    add_executable(test_runner openbox_test.cpp main.cpp)
+    add_executable(test_runner
+            openbox_test.cpp
+            main.cpp
+            OpenBox.cpp
+            OpenBox.h
+            SecureBox.h
+    )
 
-    # Define UNIT_TESTING macro so main.cpp can disable its own main()
+
+    # Флаг, щоб main.cpp не заважав
     target_compile_definitions(test_runner PRIVATE UNIT_TESTING)
 
-    # Link GTest
+    # Лінкуємо з GoogleTest
     target_link_libraries(test_runner
             GTest::gtest
             GTest::gtest_main
     )
 
+    # Автоматичне відкриття тестів
     include(GoogleTest)
     gtest_discover_tests(test_runner)
 endif()
