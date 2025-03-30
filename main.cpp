@@ -220,9 +220,29 @@ bool openBox(uint32_t y, uint32_t x) {
 
 #ifndef UNIT_TESTING
 int main(int argc, char* argv[]) {
-    uint32_t y = std::atol(argv[1]);
-    uint32_t x = std::atol(argv[2]);
+
+    if (argc != 3) {
+        std::cerr << "Usage:" << argv[0] << " <rows> <columns>\n";
+        return 1;
+    }
+    
+    long ly = std::atol(argv[1]);
+    long lx = std::atol(argv[2]);
+    
+    if (ly <= 0 || lx <= 0) {
+        std::cerr << "Error: rows and columns must be positive integers." << std::endl;
+        return 1;
+    }
+    if (ly < 3 || lx < 3) {
+        std::cerr << "Error: minimal size is 3x3." << std::endl;
+        return 1;
+    }
+    
+    auto y = static_cast<uint32_t>(ly);
+    auto x = static_cast<uint32_t>(lx);
+
     bool state = openBox(y, x);
+
 
     if (state)
         std::cout << "BOX: LOCKED!" << std::endl;
