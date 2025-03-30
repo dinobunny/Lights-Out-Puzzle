@@ -59,14 +59,15 @@ You will see the initial state and a list of button presses to solve the puzzle.
 - Solves any N x N size grid
 
 
-## 🧪 Що вже зроблено:
+## 🧪 That has already been done:
 ---
-- Працює на розмірах від `3x3` до `100x100`
-- Всі тести проходять ✅
-- Можна запускати через термінал або в CLion
-- Працює дуже швидко: великі розміри — за мілісекунди
+--- works on sizes from `3x3` to` 100x100`
+--- all tests pass - you can run through the terminal or at the Clion
+--- works very quickly: large sizes
+--- for milliseconds
+
 ---
-це мій тест
+This is my test
 ---
 ![image](https://github.com/user-attachments/assets/1ca4deb0-8c20-4b3b-8f6f-e8f37ddc935e)
 ---
@@ -124,7 +125,7 @@ make
 RUN  
 ---
 
-📤 Вивід:
+📤 Output:
 ```
 BOX: OPENED!
 ```
@@ -133,7 +134,7 @@ BOX: OPENED!
 BOX: LOCKED!
 ```
 ---
-### 👤 Автор:
+### 👤 Author:
 Євген Рафальський
 💡 Ентузіаст, який подружився з XOR, розібрався в Гауссі, і навчився відкривати коробки... в коді 😄
 "Bitwise problems need bitwise minds."
