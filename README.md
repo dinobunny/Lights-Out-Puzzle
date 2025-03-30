@@ -1,5 +1,3 @@
----
-
 ```markdown
 # 🔦 Lights-Out Puzzle Solver
 
